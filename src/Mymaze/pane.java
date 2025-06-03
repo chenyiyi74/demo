@@ -19,7 +19,7 @@ public class pane extends Pane{
                 if(maze[i][j] == 0)
                 {
                     rec = new Rectangle(j*paneside,i*paneside,9,9);
-                    rec.setFill(Color.BLACK);
+                    rec.setFill(Color.BROWN);
                     getChildren().add(rec);
                 }
                 else if(maze[i][j] == 1)
@@ -31,7 +31,7 @@ public class pane extends Pane{
                 else
                 {
                     rec = new Rectangle(j*paneside,i*paneside,9,9);
-                    rec.setFill(Color.RED);
+                    rec.setFill(Color.BLACK);
                     getChildren().add(rec);
                 }
             }
