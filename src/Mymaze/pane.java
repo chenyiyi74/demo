@@ -3,7 +3,6 @@ package Mymaze;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import java.util.Stack;
 
 public class pane extends Pane{
     Rectangle rec;

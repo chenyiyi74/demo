@@ -40,27 +40,47 @@ public class Main extends Application {
         buttonBox.setLayoutX(730);
         buttonBox.setLayoutY(120);
 
+        Text buttonTitle = new Text("手动地图选择");
+        buttonTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        buttonBox.getChildren().add(buttonTitle);
+
+
         Button manual1Btn = new Button("地图1");
         Button manual2Btn = new Button("地图2");
         Button manual3Btn = new Button("地图3");
         buttonBox.getChildren().addAll(manual1Btn, manual2Btn, manual3Btn);
 
+        VBox buttonBox2 = new VBox(20);
+        buttonBox2.setPrefWidth(150);
+        buttonBox2.setStyle("-fx-alignment: center;");
+        buttonBox2.setLayoutX(730);
+        buttonBox2.setLayoutY(300);
+
+        Text buttonTitle2 = new Text("自动地图选择");
+        buttonTitle2.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        Text buttonTitle2Help = new Text("地图规格：25*25");
+        buttonTitle2Help.setStyle("-fx-font-size: 10px; -fx-font-style: italic;");
+        buttonBox2.getChildren().add(buttonTitle2);
+
+        Button auto1Btn = new Button("prim算法地图");
+        buttonBox2.getChildren().addAll(auto1Btn);
+        buttonBox2.getChildren().add(buttonTitle2Help);
         // 顶部标题
-        Text titleText = new Text("请选择地图");
+        Text titleText = new Text("地图显示区域");
         titleText.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         titleText.setLayoutX(30);
         titleText.setLayoutY(50);
 
         // 栈区标题（始终显示在root上）
-        Text stackTitle = new Text("路径坐标栈：");
+        Text stackTitle = new Text("路径显示区域：");
         stackTitle.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         stackTitle.setLayoutX(500);
         stackTitle.setLayoutY(50);
 
-        root.getChildren().addAll(fixedMapPane, stackContentPane, buttonBox, titleText, stackTitle);
+        root.getChildren().addAll(fixedMapPane, stackContentPane, buttonBox, titleText, stackTitle, buttonBox2);
 
         Scene scene = new Scene(root, 950, 650);
-        primaryStage.setTitle("固定地图展示");
+        primaryStage.setTitle("地图迷宫鼠");
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -101,7 +121,7 @@ public class Main extends Application {
                     path bfs = new path(map, 1, 1, side - 2, side - 2);
                     Stack<int[]> stack = bfs.getStack();
                     StringBuilder sb = new StringBuilder();
-                    sb.append("最终路径：\n");
+                    sb.append("最短路径：\n");
                     java.util.List<int[]> list = new java.util.ArrayList<>(stack);
                     for (int i = list.size() - 1, count = 1; i >= 0; i--, count++) {
                         int[] pos = list.get(i);
@@ -159,7 +179,7 @@ public class Main extends Application {
                     path bfs = new path(map, 1, 1, side - 2, side - 2);
                     Stack<int[]> stack = bfs.getStack();
                     StringBuilder sb = new StringBuilder();
-                    sb.append("最终路径：\n");
+                    sb.append("最短路径：\n");
                     java.util.List<int[]> list = new java.util.ArrayList<>(stack);
                     for (int i = list.size() - 1, count = 1; i >= 0; i--, count++) {
                         int[] pos = list.get(i);
@@ -217,7 +237,7 @@ public class Main extends Application {
                     path bfs = new path(map, 1, 1, side - 2, side - 2);
                     Stack<int[]> stack = bfs.getStack();
                     StringBuilder sb = new StringBuilder();
-                    sb.append("最终路径：\n");
+                    sb.append("最短路径：\n");
                     java.util.List<int[]> list = new java.util.ArrayList<>(stack);
                     for (int i = list.size() - 1, count = 1; i >= 0; i--, count++) {
                         int[] pos = list.get(i);

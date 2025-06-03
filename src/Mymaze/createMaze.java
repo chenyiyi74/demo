@@ -6,13 +6,8 @@ import java.util.Scanner;
 
 class createMaze {
     private int[][] maze;//手动迷宫
-    private int[][] maze1;//prim算法
-    private int[][] maze2;//递归分割
-    private static final int road = 1;//0代表墙，1代表路
-    private static final int wall = 0;
     private int side;
     private int option;
-
 
     createMaze(int side, int start_x, int start_y, int option) throws FileNotFoundException {
         //自动生成的构造方法
@@ -25,7 +20,6 @@ class createMaze {
         return maze;
     }
 
-    /*******************读取 ***********************/
     public void read() throws FileNotFoundException {
         int i, j;
         switch (option) {
