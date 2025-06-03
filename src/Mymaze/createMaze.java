@@ -110,6 +110,26 @@ class createMaze {
                     }
                 }
                 break;
+
+            case 5:
+                File file5 = new File("Auto.txt");
+                maze = new int[side][side];
+                i = 0;
+                j = 0;
+                try (
+                        Scanner input = new Scanner(file5);
+                ) {
+                    while (input.hasNext()) {
+                        if (j < side) {
+                            maze[i][j] = input.nextInt();
+                            j++;
+                        } else {
+                            maze[i + 1][0] = input.nextInt();
+                            j = 1;
+                            i++;
+                        }
+                    }
+                }
         }
     }
     public void prim() {

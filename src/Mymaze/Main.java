@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -387,13 +386,7 @@ public class Main extends Application {
         findpath.setLayoutY(450 - 40 - 10);
         findpath.setDisable(true); // 初始禁用
 
-        // 用于存放地图面板，便于刷新
-        Pane mazePane = new Pane();
-        mazePane.setPrefSize(450, 450);
-        mazePane.setLayoutX(0);
-        mazePane.setLayoutY(100);
-
-        pane.getChildren().addAll(titleText, sizeLabel, sizeField, confirmBtn, mazePane, findpath);
+        pane.getChildren().addAll(titleText, sizeLabel, sizeField, confirmBtn, findpath);
 
         confirmBtn.setOnAction(e -> {
             try {
@@ -403,34 +396,30 @@ public class Main extends Application {
                     if (side < 5 || side > 30 || side % 2 == 0) {
                         sizeLabel.setText("请输入奇数且>=5的尺寸！");
                         findpath.setDisable(true);
-                        mazePane.getChildren().clear();
                         return;
                     }
                 } catch (NumberFormatException ex) {
                     sizeLabel.setText("请输入有效数字！");
                     findpath.setDisable(true);
-                    mazePane.getChildren().clear();
                     return;
                 }
                 createMaze maze = new createMaze(side, 1, 1, 5, 1);
                 map = maze.getmaze();
-
-                // 只刷新mazePane内容，不清空parent
-                mazePane.getChildren().clear();
                 pane mp = new pane(map);
-                int offset = Math.max(0, (450 - side * 20) / 2);
-                mp.setLayoutX(offset);
-                mp.setLayoutY(offset);
-                mazePane.getChildren().add(mp);
+                mp.setLayoutX(100);
+                mp.setLayoutY(100);
 
                 findpath.setDisable(false);
+                parent.getChildren().clear();
                 stackContentPane.getChildren().clear();
+                parent.getChildren().add(mp);
+                parent.getChildren().addAll(titleText, sizeLabel, sizeField, confirmBtn, findpath);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         });
 
-// 获取最短路径按钮
+        // 获取最短路径按钮
         findpath.setOnAction(f -> {
             try {
                 if (map == null) return;
@@ -451,18 +440,11 @@ public class Main extends Application {
                 }
                 Text stackText = new Text(10, 30, sb.toString());
                 stackContentPane.getChildren().setAll(stackText);
-
-                // 高亮路径
-                mazePane.getChildren().clear();
                 pane mp = new pane(map);
-                int offset = Math.max(0, (450 - side * 20) / 2);
-                mp.setLayoutX(offset);
-                mp.setLayoutY(offset);
-                mazePane.getChildren().add(mp);
-
-                parent.getChildren().clear(); // 清空地图区域
-                parent.getChildren().add(mazePane);
-                parent.getChildren().addAll(titleText, sizeLabel, sizeField, confirmBtn, findpath);
+                mp.setLayoutX(100);
+                mp.setLayoutY(100);
+                parent.getChildren().clear();
+                parent.getChildren().addAll(mp,titleText, sizeLabel, sizeField, confirmBtn, findpath);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
