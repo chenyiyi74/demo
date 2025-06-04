@@ -357,7 +357,7 @@ public class Main extends Application {
         Pane pane = new Pane();
 
         // 输入框和标签
-        Text sizeLabel = new Text("请输入迷宫尺寸:");
+        Text sizeLabel = new Text("请输入迷宫尺寸:\n(奇数且>=5,<=29)");
         sizeLabel.setLayoutX(10);
         sizeLabel.setLayoutY(60);
         sizeLabel.setStyle("-fx-font-size: 16px;");
@@ -393,8 +393,9 @@ public class Main extends Application {
                 int side;
                 try {
                     side = Integer.parseInt(sizeField.getText());
+                    sizeLabel.setText("请输入迷宫尺寸:\n(奇数且>=5,<=29)");
                     if (side < 5 || side > 30 || side % 2 == 0) {
-                        sizeLabel.setText("请输入奇数且>=5的尺寸！");
+                        sizeLabel.setText("输入有误！");
                         findpath.setDisable(true);
                         return;
                     }
