@@ -1,8 +1,6 @@
 package Mymaze;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
@@ -24,7 +22,6 @@ public class path {
         this.endx = endx;
         this.endy = endy;
         bfsAndMarkPath();
-        savepath();
     }
 
     // BFS寻找最短路径并在maze中标记路径为2，同时压入stack
@@ -81,22 +78,5 @@ public class path {
 
     public Stack<int[]> getStack() {
         return stack;
-    }
-
-    public int[][] getMaze() {
-        return maze;
-    }
-
-    public void savepath() throws FileNotFoundException {
-        File file = new File("path.txt");
-        try (PrintWriter output = new PrintWriter(file)) {
-            for (int i = 0; i < side; i++) {
-                for (int j = 0; j < side; j++) {
-                    output.print(maze[i][j]);
-                    output.print(' ');
-                }
-                output.println();
-            }
-        }
     }
 }

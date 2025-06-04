@@ -412,8 +412,7 @@ public class Main extends Application {
                 findpath.setDisable(false);
                 parent.getChildren().clear();
                 stackContentPane.getChildren().clear();
-                parent.getChildren().add(mp);
-                parent.getChildren().addAll(titleText, sizeLabel, sizeField, confirmBtn, findpath);
+                parent.getChildren().addAll(mp,titleText, sizeLabel, sizeField, confirmBtn, findpath);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
