@@ -6,7 +6,7 @@ import javafx.scene.shape.Rectangle;
 
 public class pane extends Pane{
     Rectangle rec;
-    private int paneside = 10;
+    private int paneside = 9;
 
     public pane(int[][] maze)
     {

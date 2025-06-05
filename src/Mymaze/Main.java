@@ -92,10 +92,12 @@ public class Main extends Application {
         Name.setLayoutX(10);
         Name.setLayoutY(560);
 
-        Text Name2=new Text("-----\n-----");
+        Text Name2=new Text("   /\\_/\\\n" +
+                "  ( o.o )\n" +
+                "  > ^ <\n");
         Name2.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-        Name2.setLayoutX(900);
-        Name2.setLayoutY(580);
+        Name2.setLayoutX(850);
+        Name2.setLayoutY(560);
         root.getChildren().addAll(fixedMapPane, stackContentPane, buttonBox, titleText, stackTitle, buttonBox2,Name,Name2);
 
         Scene scene = new Scene(root, 950, 650);
@@ -168,13 +170,13 @@ public class Main extends Application {
                     throw new RuntimeException(e);
                 }
                 pane mp = new pane(map);
-                mp.setLayoutX((650 - side * 20) / 2.0);
-                mp.setLayoutY((650 - side * 20) / 2.0);
+                mp.setLayoutX(100);
+                mp.setLayoutY(100);
                 parent.getChildren().setAll(mp, findpath, titleText);
             });
             pane mazePane = new pane(map);
-            mazePane.setLayoutX((650 - side * 20) / 2.0);
-            mazePane.setLayoutY((650 - side * 20) / 2.0);
+            mazePane.setLayoutX(100);
+            mazePane.setLayoutY(100);
             pane.getChildren().addAll(mazePane, findpath);
             return pane;
         } catch (FileNotFoundException e1) {
@@ -226,13 +228,13 @@ public class Main extends Application {
                     throw new RuntimeException(e);
                 }
                 pane mp = new pane(map);
-                mp.setLayoutX((650 - side * 20) / 2.0);
-                mp.setLayoutY((650 - side * 20) / 2.0);
+                mp.setLayoutX(100);
+                mp.setLayoutY(100);
                 parent.getChildren().setAll(mp, findpath, titleText);
             });
             pane mazePane = new pane(map);
-            mazePane.setLayoutX((650 - side * 20) / 2.0);
-            mazePane.setLayoutY((650 - side * 20) / 2.0);
+            mazePane.setLayoutX(100);
+            mazePane.setLayoutY(100);
             pane.getChildren().addAll(mazePane, findpath);
             return pane;
         } catch (FileNotFoundException e1) {
@@ -284,13 +286,13 @@ public class Main extends Application {
                     throw new RuntimeException(e);
                 }
                 pane mp = new pane(map);
-                mp.setLayoutX((650 - side * 20) / 2.0);
-                mp.setLayoutY((650 - side * 20) / 2.0);
+                mp.setLayoutX(100);
+                mp.setLayoutY(100);
                 parent.getChildren().setAll(mp, findpath, titleText);
             });
             pane mazePane = new pane(map);
-            mazePane.setLayoutX((650 - side * 20) / 2.0);
-            mazePane.setLayoutY((650 - side * 20) / 2.0);
+            mazePane.setLayoutX(100);
+            mazePane.setLayoutY(100);
             pane.getChildren().addAll(mazePane, findpath);
             return pane;
         } catch (FileNotFoundException e1) {
@@ -339,13 +341,13 @@ public class Main extends Application {
                     throw new RuntimeException(e);
                 }
                 pane mp = new pane(map);
-                mp.setLayoutX((650 - side * 20) / 2.0);
-                mp.setLayoutY((650 - side * 20) / 2.0);
+                mp.setLayoutX(100);
+                mp.setLayoutY(100);
                 parent.getChildren().setAll(mp, findpath, titleText);
             });
             pane mazePane = new pane(map);
-            mazePane.setLayoutX((650 - side * 20) / 2.0);
-            mazePane.setLayoutY((650 - side * 20) / 2.0);
+            mazePane.setLayoutX(100);
+            mazePane.setLayoutY(100);
             pane.getChildren().addAll(mazePane, findpath);
             return pane;
         } catch (FileNotFoundException e1) {
@@ -406,6 +408,7 @@ public class Main extends Application {
                 }
                 createMaze maze = new createMaze(side, 1, 1, 5, 1);
                 map = maze.getmaze();
+                sizeLabel.setText("输入正确！");
                 pane mp = new pane(map);
                 mp.setLayoutX(100);
                 mp.setLayoutY(100);
