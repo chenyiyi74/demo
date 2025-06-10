@@ -24,7 +24,7 @@ public class Main extends Application {
         // 左侧正方形地图展示框
         Pane fixedMapPane = new Pane();
         fixedMapPane.setPrefSize(450, 450);
-        fixedMapPane.setStyle("-fx-border-color: black; -fx-border-width: 2; -fx-background-color: green;");
+        fixedMapPane.setStyle("-fx-border-color: black; -fx-border-width: 2; -fx-background-color: white;");
         fixedMapPane.setLayoutX(30);
         fixedMapPane.setLayoutY(80);
 
@@ -134,57 +134,103 @@ public class Main extends Application {
             createMaze maze = new createMaze(25, 1, 1, 1);
             map = maze.getmaze();
             int side = map.length;
+
             Text titleText = new Text("地图1");
             titleText.setLayoutX(10);
             titleText.setLayoutY(30);
             titleText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
             pane.getChildren().add(titleText);
 
-            Button findpath = new Button("获取最短路径");
+            Button findpath = new Button("直接获取最短路径");
             findpath.setPrefHeight(40);
-            findpath.setPrefWidth(100);
-            findpath.setLayoutX((450 - 100) / 2.0);
-            findpath.setLayoutY(450 - 40 - 10);
+            findpath.setPrefWidth(120);
+            findpath.setLayoutX(80);
+            findpath.setLayoutY(470);
+
+            Button one_find = new Button("一步步获取路径");
+            one_find.setPrefHeight(40);
+            one_find.setPrefWidth(100);
+            one_find.setLayoutX(250);
+            one_find.setLayoutY(470);
+
+            path bfs = new path(map, 1, 1, side - 2, side - 2);
+            Stack<int[]> stack = bfs.getStack();
+            List<int[]> list = new ArrayList<>(stack);
+            // 反转，使起点在前
+            java.util.Collections.reverse(list);
+            final int[] stepIndex = {0};
+
             findpath.setOnAction(f -> {
                 try {
-                    path bfs = new path(map, 1, 1, side - 2, side - 2);
-                    Stack<int[]> stack = bfs.getStack();
                     StringBuilder sb = new StringBuilder();
                     sb.append("最短路径：\n");
-                    List<int[]> list = new ArrayList<>(stack);
-                    for (int i = list.size() - 1, count = 1; i >= 0; i--, count++) {
+                    for (int i = 0, count = 1; i < list.size(); i++, count++) {
                         int[] pos = list.get(i);
                         sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
-                        if (count % 2 == 1) {
-                            if(count>10)
-                                sb.append("\t");
-                            else
-                                sb.append("\t\t");
-                        } else {
+                        if ((i+1) % 4 == 0) {
                             sb.append("\n");
+                        } else {
+                            sb.append(" ");
                         }
                     }
                     Text stackText = new Text(10, 30, sb.toString());
                     stackContentPane.getChildren().setAll(stackText);
+
+                    stepIndex[0] = 0;
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
                 pane mp = new pane(map);
-                mp.setLayoutX(100);
-                mp.setLayoutY(100);
-                parent.getChildren().setAll(mp, findpath, titleText);
+                mp.setLayoutX(55);
+                mp.setLayoutY(45);
+                mp.setPath(list);
+                parent.getChildren().setAll(mp, findpath, titleText, one_find);
             });
+
+            one_find.setOnAction(f -> {
+                try {
+                    if (stepIndex[0] < list.size()) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("路径步进：\n");
+                        for (int i = 0; i <= stepIndex[0]; i++) {
+                            int[] pos = list.get(i);
+                            sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
+                            if ((i+1) % 4 == 0) {
+                                sb.append("\n");
+                            } else {
+                                sb.append(" ");
+                            }
+                        }
+                        Text stackText = new Text(10, 30, sb.toString());
+                        stackContentPane.getChildren().setAll(stackText);
+
+                        // 地图高亮当前
+                        List<int[]> subPath = list.subList(0, stepIndex[0] + 1);
+                        pane mp = new pane(map);
+                        mp.setLayoutX(55);
+                        mp.setLayoutY(45);
+                        if (mp instanceof pane) {
+                            mp.setPath(subPath);
+                        }
+                        parent.getChildren().setAll(mp, findpath, titleText, one_find);
+
+                        stepIndex[0]++;
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
             pane mazePane = new pane(map);
-            mazePane.setLayoutX(100);
-            mazePane.setLayoutY(100);
-            pane.getChildren().addAll(mazePane, findpath);
+            mazePane.setLayoutX(55);
+            mazePane.setLayoutY(45);
+            pane.getChildren().addAll(mazePane, findpath, one_find);
             return pane;
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
         return pane;
     }
-
     public Pane getManual2Pane(Pane parent, Pane stackContentPane) {
         Pane pane = new Pane();
         try {
@@ -201,41 +247,82 @@ public class Main extends Application {
             Button findpath = new Button("获取最短路径");
             findpath.setPrefHeight(40);
             findpath.setPrefWidth(100);
-            findpath.setLayoutX((450 - 100) / 2.0);
-            findpath.setLayoutY(450 - 40 - 10);
+            findpath.setLayoutX(80);
+            findpath.setLayoutY(470);
+
+            Button one_find = new Button("一步步获取路径");
+            one_find.setPrefHeight(40);
+            one_find.setPrefWidth(100);
+            one_find.setLayoutX(250);
+            one_find.setLayoutY(470);
+
+            path bfs = new path(map, 1, 1, side - 2, side - 2);
+            Stack<int[]> stack = bfs.getStack();
+            List<int[]> list = new ArrayList<>(stack);
+            java.util.Collections.reverse(list);
+            final int[] stepIndex = {0};
+
             findpath.setOnAction(f -> {
                 try {
-                    path bfs = new path(map, 1, 1, side - 2, side - 2);
-                    Stack<int[]> stack = bfs.getStack();
                     StringBuilder sb = new StringBuilder();
                     sb.append("最短路径：\n");
-                    List<int[]> list = new ArrayList<>(stack);
-                    for (int i = list.size() - 1, count = 1; i >= 0; i--, count++) {
+                    for (int i = 0, count = 1; i < list.size(); i++, count++) {
                         int[] pos = list.get(i);
                         sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
-                        if (count % 2 == 1) {
-                            if(count>16)
-                                sb.append("\t");
-                            else
-                                sb.append("\t\t");
-                        } else {
+                        if ((i+1) % 4 == 0) {
                             sb.append("\n");
+                        } else {
+                            sb.append(" ");
                         }
                     }
                     Text stackText = new Text(10, 30, sb.toString());
                     stackContentPane.getChildren().setAll(stackText);
+                    stepIndex[0] = 0;
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
                 pane mp = new pane(map);
-                mp.setLayoutX(100);
-                mp.setLayoutY(100);
-                parent.getChildren().setAll(mp, findpath, titleText);
+                mp.setLayoutX(55);
+                mp.setLayoutY(45);
+                mp.setPath(list);
+                parent.getChildren().setAll(mp, findpath, titleText, one_find);
             });
+
+            one_find.setOnAction(f -> {
+                try {
+                    if (stepIndex[0] < list.size()) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("路径步进：\n");
+                        for (int i = 0; i <= stepIndex[0]; i++) {
+                            int[] pos = list.get(i);
+                            sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
+                            if ((i+1) % 4 == 0) {
+                                sb.append("\n");
+                            } else {
+                                sb.append(" ");
+                            }
+                        }
+                        Text stackText = new Text(10, 30, sb.toString());
+                        stackContentPane.getChildren().setAll(stackText);
+
+                        List<int[]> subPath = list.subList(0, stepIndex[0] + 1);
+                        pane mp = new pane(map);
+                        mp.setLayoutX(55);
+                        mp.setLayoutY(45);
+                        mp.setPath(subPath);
+                        parent.getChildren().setAll(mp, findpath, titleText, one_find);
+
+                        stepIndex[0]++;
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
             pane mazePane = new pane(map);
-            mazePane.setLayoutX(100);
-            mazePane.setLayoutY(100);
-            pane.getChildren().addAll(mazePane, findpath);
+            mazePane.setLayoutX(55);
+            mazePane.setLayoutY(45);
+            pane.getChildren().addAll(mazePane, findpath, one_find);
             return pane;
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
@@ -259,52 +346,93 @@ public class Main extends Application {
             Button findpath = new Button("获取最短路径");
             findpath.setPrefHeight(40);
             findpath.setPrefWidth(100);
-            findpath.setLayoutX((450 - 100) / 2.0);
-            findpath.setLayoutY(450 - 40 - 10);
+            findpath.setLayoutX(80);
+            findpath.setLayoutY(470);
+
+            Button one_find = new Button("一步步获取路径");
+            one_find.setPrefHeight(40);
+            one_find.setPrefWidth(100);
+            one_find.setLayoutX(250);
+            one_find.setLayoutY(470);
+
+            path bfs = new path(map, 1, 1, side - 2, side - 2);
+            Stack<int[]> stack = bfs.getStack();
+            List<int[]> list = new ArrayList<>(stack);
+            java.util.Collections.reverse(list);
+            final int[] stepIndex = {0};
+
             findpath.setOnAction(f -> {
                 try {
-                    path bfs = new path(map, 1, 1, side - 2, side - 2);
-                    Stack<int[]> stack = bfs.getStack();
                     StringBuilder sb = new StringBuilder();
                     sb.append("最短路径：\n");
-                    List<int[]> list = new ArrayList<>(stack);
-                    for (int i = list.size() - 1, count = 1; i >= 0; i--, count++) {
+                    for (int i = 0, count = 1; i < list.size(); i++, count++) {
                         int[] pos = list.get(i);
                         sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
-                        if (count % 2 == 1) {
-                            if(count>10)
-                                sb.append("\t");
-                            else
-                                sb.append("\t\t");
-                        } else {
+                        if ((i+1) % 4 == 0) {
                             sb.append("\n");
+                        } else {
+                            sb.append(" ");
                         }
                     }
                     Text stackText = new Text(10, 30, sb.toString());
                     stackContentPane.getChildren().setAll(stackText);
+                    stepIndex[0] = 0;
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
                 pane mp = new pane(map);
-                mp.setLayoutX(100);
-                mp.setLayoutY(100);
-                parent.getChildren().setAll(mp, findpath, titleText);
+                mp.setLayoutX(55);
+                mp.setLayoutY(45);
+                mp.setPath(list);
+                parent.getChildren().setAll(mp, findpath, titleText, one_find);
             });
+
+            one_find.setOnAction(f -> {
+                try {
+                    if (stepIndex[0] < list.size()) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("路径步进：\n");
+                        for (int i = 0; i <= stepIndex[0]; i++) {
+                            int[] pos = list.get(i);
+                            sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
+                            if ((i+1) % 4 == 0) {
+                                sb.append("\n");
+                            } else {
+                                sb.append(" ");
+                            }
+                        }
+                        Text stackText = new Text(10, 30, sb.toString());
+                        stackContentPane.getChildren().setAll(stackText);
+
+                        List<int[]> subPath = list.subList(0, stepIndex[0] + 1);
+                        pane mp = new pane(map);
+                        mp.setLayoutX(55);
+                        mp.setLayoutY(45);
+                        mp.setPath(subPath);
+                        parent.getChildren().setAll(mp, findpath, titleText, one_find);
+
+                        stepIndex[0]++;
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
             pane mazePane = new pane(map);
-            mazePane.setLayoutX(100);
-            mazePane.setLayoutY(100);
-            pane.getChildren().addAll(mazePane, findpath);
+            mazePane.setLayoutX(55);
+            mazePane.setLayoutY(45);
+            pane.getChildren().addAll(mazePane, findpath, one_find);
             return pane;
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
         return pane;
     }
+
     public Pane getManual4Pane(Pane parent, Pane stackContentPane) {
         Pane pane = new Pane();
         try {
             createMaze maze = new createMaze(25, 1, 1, 4,0);
-            // 使用prim算法生成迷宫
             map = maze.getmaze();
             int side = map.length;
 
@@ -317,16 +445,26 @@ public class Main extends Application {
             Button findpath = new Button("获取最短路径");
             findpath.setPrefHeight(40);
             findpath.setPrefWidth(100);
-            findpath.setLayoutX((450 - 100) / 2.0);
-            findpath.setLayoutY(450 - 40 - 10);
+            findpath.setLayoutX(80);
+            findpath.setLayoutY(470);
+
+            Button one_find = new Button("一步步获取路径");
+            one_find.setPrefHeight(40);
+            one_find.setPrefWidth(100);
+            one_find.setLayoutX(250);
+            one_find.setLayoutY(470);
+
+            path bfs = new path(map, 1, 1, side - 2, side - 2);
+            Stack<int[]> stack = bfs.getStack();
+            List<int[]> list = new ArrayList<>(stack);
+            java.util.Collections.reverse(list);
+            final int[] stepIndex = {0};
+
             findpath.setOnAction(f -> {
                 try {
-                    path bfs = new path(map, 1, 1, side - 2, side - 2);
-                    Stack<int[]> stack = bfs.getStack();
                     StringBuilder sb = new StringBuilder();
                     sb.append("最短路径：\n");
-                    List<int[]> list = new ArrayList<>(stack);
-                    for (int i = list.size() - 1, count = 1; i >= 0; i--, count++) {
+                    for (int i = 0, count = 1; i < list.size(); i++, count++) {
                         int[] pos = list.get(i);
                         sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
                         if (count % 4 == 0) {
@@ -337,35 +475,70 @@ public class Main extends Application {
                     }
                     Text stackText = new Text(10, 30, sb.toString());
                     stackContentPane.getChildren().setAll(stackText);
+                    stepIndex[0] = 0;
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
                 pane mp = new pane(map);
-                mp.setLayoutX(100);
-                mp.setLayoutY(100);
-                parent.getChildren().setAll(mp, findpath, titleText);
+                mp.setLayoutX(55);
+                mp.setLayoutY(45);
+                mp.setPath(list);
+                parent.getChildren().setAll(mp, findpath, titleText, one_find);
             });
+
+            one_find.setOnAction(f -> {
+                try {
+                    if (stepIndex[0] < list.size()) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("路径步进：\n");
+                        for (int i = 0; i <= stepIndex[0]; i++) {
+                            int[] pos = list.get(i);
+                            sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
+                            if ((i+1) % 4 == 0) {
+                                sb.append("\n");
+                            } else {
+                                sb.append(" ");
+                            }
+                        }
+                        Text stackText = new Text(10, 30, sb.toString());
+                        stackContentPane.getChildren().setAll(stackText);
+
+                        List<int[]> subPath = list.subList(0, stepIndex[0] + 1);
+                        pane mp = new pane(map);
+                        mp.setLayoutX(55);
+                        mp.setLayoutY(45);
+                        mp.setPath(subPath);
+                        parent.getChildren().setAll(mp, findpath, titleText, one_find);
+
+                        stepIndex[0]++;
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
             pane mazePane = new pane(map);
-            mazePane.setLayoutX(100);
-            mazePane.setLayoutY(100);
-            pane.getChildren().addAll(mazePane, findpath);
+            mazePane.setLayoutX(55);
+            mazePane.setLayoutY(45);
+            pane.getChildren().addAll(mazePane, findpath, one_find);
             return pane;
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
         return pane;
     }
+
     public Pane getManual5Pane(Pane parent, Pane stackContentPane) {
         Pane pane = new Pane();
 
         // 输入框和标签
         Text sizeLabel = new Text("请输入迷宫尺寸:\n(奇数且>=5,<=29)");
-        sizeLabel.setLayoutX(10);
-        sizeLabel.setLayoutY(60);
+        sizeLabel.setLayoutX(100);
+        sizeLabel.setLayoutY(30);
         sizeLabel.setStyle("-fx-font-size: 16px;");
         javafx.scene.control.TextField sizeField = new javafx.scene.control.TextField("25");
-        sizeField.setLayoutX(150);
-        sizeField.setLayoutY(40);
+        sizeField.setLayoutX(280);
+        sizeField.setLayoutY(15);
         sizeField.setPrefWidth(60);
 
         // 地图标题
@@ -378,17 +551,32 @@ public class Main extends Application {
         Button confirmBtn = new Button("确定");
         confirmBtn.setPrefHeight(30);
         confirmBtn.setPrefWidth(60);
-        confirmBtn.setLayoutX(230);
-        confirmBtn.setLayoutY(40);
+        confirmBtn.setLayoutX(360);
+        confirmBtn.setLayoutY(10);
 
+        //获取最短路径按钮
         Button findpath = new Button("获取最短路径");
         findpath.setPrefHeight(40);
         findpath.setPrefWidth(100);
-        findpath.setLayoutX((450 - 100) / 2.0);
-        findpath.setLayoutY(450 - 40 - 10);
-        findpath.setDisable(true); // 初始禁用
+        findpath.setLayoutX(80);
+        findpath.setLayoutY(470);
+        findpath.setDisable(true);
 
-        pane.getChildren().addAll(titleText, sizeLabel, sizeField, confirmBtn, findpath);
+        // 一步步获取路径按钮
+        Button one_find = new Button("一步步获取路径");
+        one_find.setPrefHeight(40);
+        one_find.setPrefWidth(100);
+        one_find.setLayoutX(250);
+        one_find.setLayoutY(470);
+        one_find.setDisable(true);
+
+        // 将所有组件添加到pane中
+        pane.getChildren().addAll(titleText, sizeLabel, sizeField, confirmBtn, findpath, one_find);
+
+        // 路径数据
+        final List<int[]>[] pathList = new List[]{null};
+        final int[] stepIndex = {0};
+        final int[][][] mapHolder = {null};
 
         confirmBtn.setOnAction(e -> {
             try {
@@ -396,58 +584,103 @@ public class Main extends Application {
                 try {
                     side = Integer.parseInt(sizeField.getText());
                     sizeLabel.setText("请输入迷宫尺寸:\n(奇数且>=5,<=29)");
-                    if (side < 5 || side > 30 || side % 2 == 0) {
+                    if (side < 5 || side > 29 || side % 2 == 0) {
                         sizeLabel.setText("输入有误！");
                         findpath.setDisable(true);
+                        one_find.setDisable(true);
                         return;
                     }
                 } catch (NumberFormatException ex) {
                     sizeLabel.setText("请输入有效数字！");
                     findpath.setDisable(true);
+                    one_find.setDisable(true);
                     return;
                 }
                 createMaze maze = new createMaze(side, 1, 1, 5, 1);
                 map = maze.getmaze();
+                mapHolder[0] = map;
                 sizeLabel.setText("输入正确！");
                 pane mp = new pane(map);
-                mp.setLayoutX(100);
-                mp.setLayoutY(100);
+                mp.setLayoutX(55);
+                mp.setLayoutY(45);
 
                 findpath.setDisable(false);
-                parent.getChildren().clear();
+                one_find.setDisable(false);
+                stepIndex[0] = 0;
                 stackContentPane.getChildren().clear();
-                parent.getChildren().addAll(mp,titleText, sizeLabel, sizeField, confirmBtn, findpath);
+                pane.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, findpath, one_find);
+
+                // 计算路径
+                path bfs = new path(map, 1, 1, side - 2, side - 2);
+                Stack<int[]> stack = bfs.getStack();
+                List<int[]> list = new ArrayList<>(stack);
+                java.util.Collections.reverse(list);
+                pathList[0] = list;
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         });
 
-        // 获取最短路径按钮
         findpath.setOnAction(f -> {
             try {
-                if (map == null) return;
-                int side = map.length;
-                path bfs = new path(map, 1, 1, side - 2, side - 2);
-                Stack<int[]> stack = bfs.getStack();
+                if (mapHolder[0] == null || pathList[0] == null) return;
+                List<int[]> list = pathList[0];
                 StringBuilder sb = new StringBuilder();
                 sb.append("最短路径：\n");
-                List<int[]> list = new ArrayList<>(stack);
-                for (int i = list.size() - 1, count = 1; i >= 0; i--, count++) {
+                for (int i = 0, count = 1; i < list.size(); i++, count++) {
                     int[] pos = list.get(i);
                     sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
-                    if (count % 4 == 0) {
-                        sb.append("\n");
+                    if (count % 2 == 1) {
+                        if (count > 10)
+                            sb.append("\t");
+                        else
+                            sb.append("\t\t");
                     } else {
-                        sb.append(" ");
+                        sb.append("\n");
                     }
                 }
                 Text stackText = new Text(10, 30, sb.toString());
                 stackContentPane.getChildren().setAll(stackText);
-                pane mp = new pane(map);
-                mp.setLayoutX(100);
-                mp.setLayoutY(100);
-                parent.getChildren().clear();
-                parent.getChildren().addAll(mp,titleText, sizeLabel, sizeField, confirmBtn, findpath);
+
+                stepIndex[0] = 0;
+                pane mp = new pane(mapHolder[0]);
+                mp.setLayoutX(55);
+                mp.setLayoutY(45);
+                mp.setPath(list);
+                pane.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, findpath, one_find);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        one_find.setOnAction(f -> {
+            try {
+                if (mapHolder[0] == null || pathList[0] == null) return;
+                List<int[]> list = pathList[0];
+                if (stepIndex[0] < list.size()) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("路径步进：\n");
+                    for (int i = 0; i <= stepIndex[0]; i++) {
+                        int[] pos = list.get(i);
+                        sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
+                        if ((i + 1) % 2 == 0) {
+                            sb.append("\n");
+                        } else {
+                            sb.append("\t");
+                        }
+                    }
+                    Text stackText = new Text(10, 30, sb.toString());
+                    stackContentPane.getChildren().setAll(stackText);
+
+                    List<int[]> subPath = list.subList(0, stepIndex[0] + 1);
+                    pane mp = new pane(mapHolder[0]);
+                    mp.setLayoutX(55);
+                    mp.setLayoutY(45);
+                    mp.setPath(subPath);
+                    pane.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, findpath, one_find);
+
+                    stepIndex[0]++;
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

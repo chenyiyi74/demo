@@ -79,4 +79,7 @@ public class path {
     public Stack<int[]> getStack() {
         return stack;
     }
+    public int[][] getMaze() {
+        return maze;
+    }
 }
