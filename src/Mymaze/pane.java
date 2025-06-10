@@ -23,7 +23,7 @@ public class pane extends Pane {
     private void drawMaze() {
         getChildren().clear();
         int side = map.length;
-        // 绘制迷宫格子
+        //绘制迷宫格子
         for (int i = 0; i < side; i++) {
             for (int j = 0; j < side; j++) {
                 Rectangle rec = new Rectangle(j * paneside, i * paneside, paneside, paneside);
@@ -36,7 +36,7 @@ public class pane extends Pane {
                 getChildren().add(rec);
             }
         }
-        // 高亮路径
+        //高亮路径
         if (path != null) {
             for (int[] pos : path) {
                 Rectangle rect = new Rectangle(pos[1] * paneside, pos[0] * paneside, paneside, paneside);

@@ -38,9 +38,10 @@ public class Main extends Application {
         // 右侧按钮区
         VBox buttonBox = new VBox(20);
         buttonBox.setPrefWidth(150);
-        buttonBox.setStyle("-fx-alignment: center;");
+        buttonBox.setAlignment(javafx.geometry.Pos.CENTER);
         buttonBox.setLayoutX(730);
-        buttonBox.setLayoutY(120);
+        buttonBox.setLayoutY(80);
+        buttonBox.setStyle("-fx-background-color: white; -fx-padding: 10px; -fx-border-color: black; -fx-border-width: 1px;");
 
         Text buttonTitle = new Text("手动地图选择");
         buttonTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
@@ -54,10 +55,10 @@ public class Main extends Application {
 
         VBox buttonBox2 = new VBox(20);
         buttonBox2.setPrefWidth(150);
-        buttonBox2.setStyle("-fx-alignment: center;");
+        buttonBox2.setAlignment(javafx.geometry.Pos.CENTER);
         buttonBox2.setLayoutX(730);
-        buttonBox2.setLayoutY(300);
-
+        buttonBox2.setLayoutY(330);
+        buttonBox2.setStyle("-fx-background-color: white; -fx-padding: 10px; -fx-border-color: black; -fx-border-width: 1px;");
 
         Text buttonTitle2 = new Text("自动地图选择");
         buttonTitle2.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
@@ -65,21 +66,22 @@ public class Main extends Application {
         buttonTitle2Help.setStyle("-fx-font-size: 10px; -fx-font-style: italic;");
         Text buttonTitle2Help2 = new Text("自定义规格");
         buttonTitle2Help2.setStyle("-fx-font-size: 10px; -fx-font-style: italic;");
-        buttonBox2.getChildren().add(buttonTitle2);
 
         Button auto1Btn = new Button("prim算法（自动）");
         Button auto2Btn = new Button("prim算法（手动）");
+        buttonBox2.getChildren().add(buttonTitle2);
         buttonBox2.getChildren().addAll(auto1Btn);
         buttonBox2.getChildren().add(buttonTitle2Help);
         buttonBox2.getChildren().add(auto2Btn);
         buttonBox2.getChildren().add(buttonTitle2Help2);
+
         // 顶部标题
         Text titleText = new Text("地图显示区域");
         titleText.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         titleText.setLayoutX(30);
         titleText.setLayoutY(50);
 
-        // 栈区标题（始终显示在root上）
+        // 栈区标题
         Text stackTitle = new Text("路径显示区域：");
         stackTitle.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         stackTitle.setLayoutX(500);
@@ -132,7 +134,7 @@ public class Main extends Application {
         Pane pane = new Pane();
         try {
             createMaze maze = new createMaze(25, 1, 1, 1);
-            map = maze.getmaze();
+            map = maze.getMaze();
             int side = map.length;
 
             Text titleText = new Text("地图1");
@@ -141,13 +143,13 @@ public class Main extends Application {
             titleText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
             pane.getChildren().add(titleText);
 
-            Button findpath = new Button("直接获取最短路径");
-            findpath.setPrefHeight(40);
-            findpath.setPrefWidth(120);
-            findpath.setLayoutX(80);
-            findpath.setLayoutY(470);
+            Button find_path = new Button("直接获取最短路径");
+            find_path.setPrefHeight(40);
+            find_path.setPrefWidth(120);
+            find_path.setLayoutX(80);
+            find_path.setLayoutY(470);
 
-            Button one_find = new Button("一步步获取路径");
+            Button one_find = new Button("分步获取路径");
             one_find.setPrefHeight(40);
             one_find.setPrefWidth(100);
             one_find.setLayoutX(250);
@@ -156,11 +158,10 @@ public class Main extends Application {
             path bfs = new path(map, 1, 1, side - 2, side - 2);
             Stack<int[]> stack = bfs.getStack();
             List<int[]> list = new ArrayList<>(stack);
-            // 反转，使起点在前
             java.util.Collections.reverse(list);
             final int[] stepIndex = {0};
 
-            findpath.setOnAction(f -> {
+            find_path.setOnAction(f -> {
                 try {
                     StringBuilder sb = new StringBuilder();
                     sb.append("最短路径：\n");
@@ -184,7 +185,7 @@ public class Main extends Application {
                 mp.setLayoutX(55);
                 mp.setLayoutY(45);
                 mp.setPath(list);
-                parent.getChildren().setAll(mp, findpath, titleText, one_find);
+                parent.getChildren().setAll(mp, find_path, titleText, one_find);
             });
 
             one_find.setOnAction(f -> {
@@ -209,10 +210,8 @@ public class Main extends Application {
                         pane mp = new pane(map);
                         mp.setLayoutX(55);
                         mp.setLayoutY(45);
-                        if (mp instanceof pane) {
-                            mp.setPath(subPath);
-                        }
-                        parent.getChildren().setAll(mp, findpath, titleText, one_find);
+                        mp.setPath(subPath);
+                        parent.getChildren().setAll(mp, find_path, titleText, one_find);
 
                         stepIndex[0]++;
                     }
@@ -224,7 +223,7 @@ public class Main extends Application {
             pane mazePane = new pane(map);
             mazePane.setLayoutX(55);
             mazePane.setLayoutY(45);
-            pane.getChildren().addAll(mazePane, findpath, one_find);
+            pane.getChildren().addAll(mazePane, find_path, one_find);
             return pane;
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
@@ -235,7 +234,7 @@ public class Main extends Application {
         Pane pane = new Pane();
         try {
             createMaze maze = new createMaze(25, 1, 1, 2);
-            map = maze.getmaze();
+            map = maze.getMaze();
             int side = map.length;
 
             Text titleText = new Text("地图2");
@@ -244,13 +243,13 @@ public class Main extends Application {
             titleText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
             pane.getChildren().add(titleText);
 
-            Button findpath = new Button("获取最短路径");
-            findpath.setPrefHeight(40);
-            findpath.setPrefWidth(100);
-            findpath.setLayoutX(80);
-            findpath.setLayoutY(470);
+            Button find_path = new Button("获取最短路径");
+            find_path.setPrefHeight(40);
+            find_path.setPrefWidth(100);
+            find_path.setLayoutX(80);
+            find_path.setLayoutY(470);
 
-            Button one_find = new Button("一步步获取路径");
+            Button one_find = new Button("分步获取路径");
             one_find.setPrefHeight(40);
             one_find.setPrefWidth(100);
             one_find.setLayoutX(250);
@@ -262,7 +261,7 @@ public class Main extends Application {
             java.util.Collections.reverse(list);
             final int[] stepIndex = {0};
 
-            findpath.setOnAction(f -> {
+            find_path.setOnAction(f -> {
                 try {
                     StringBuilder sb = new StringBuilder();
                     sb.append("最短路径：\n");
@@ -285,7 +284,7 @@ public class Main extends Application {
                 mp.setLayoutX(55);
                 mp.setLayoutY(45);
                 mp.setPath(list);
-                parent.getChildren().setAll(mp, findpath, titleText, one_find);
+                parent.getChildren().setAll(mp, find_path, titleText, one_find);
             });
 
             one_find.setOnAction(f -> {
@@ -310,7 +309,7 @@ public class Main extends Application {
                         mp.setLayoutX(55);
                         mp.setLayoutY(45);
                         mp.setPath(subPath);
-                        parent.getChildren().setAll(mp, findpath, titleText, one_find);
+                        parent.getChildren().setAll(mp, find_path, titleText, one_find);
 
                         stepIndex[0]++;
                     }
@@ -322,7 +321,7 @@ public class Main extends Application {
             pane mazePane = new pane(map);
             mazePane.setLayoutX(55);
             mazePane.setLayoutY(45);
-            pane.getChildren().addAll(mazePane, findpath, one_find);
+            pane.getChildren().addAll(mazePane, find_path, one_find);
             return pane;
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
@@ -334,7 +333,7 @@ public class Main extends Application {
         Pane pane = new Pane();
         try {
             createMaze maze = new createMaze(25, 1, 1, 3);
-            map = maze.getmaze();
+            map = maze.getMaze();
             int side = map.length;
 
             Text titleText = new Text("地图3");
@@ -343,13 +342,13 @@ public class Main extends Application {
             titleText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
             pane.getChildren().add(titleText);
 
-            Button findpath = new Button("获取最短路径");
-            findpath.setPrefHeight(40);
-            findpath.setPrefWidth(100);
-            findpath.setLayoutX(80);
-            findpath.setLayoutY(470);
+            Button find_path = new Button("获取最短路径");
+            find_path.setPrefHeight(40);
+            find_path.setPrefWidth(100);
+            find_path.setLayoutX(80);
+            find_path.setLayoutY(470);
 
-            Button one_find = new Button("一步步获取路径");
+            Button one_find = new Button("分步获取路径");
             one_find.setPrefHeight(40);
             one_find.setPrefWidth(100);
             one_find.setLayoutX(250);
@@ -361,7 +360,7 @@ public class Main extends Application {
             java.util.Collections.reverse(list);
             final int[] stepIndex = {0};
 
-            findpath.setOnAction(f -> {
+            find_path.setOnAction(f -> {
                 try {
                     StringBuilder sb = new StringBuilder();
                     sb.append("最短路径：\n");
@@ -384,7 +383,7 @@ public class Main extends Application {
                 mp.setLayoutX(55);
                 mp.setLayoutY(45);
                 mp.setPath(list);
-                parent.getChildren().setAll(mp, findpath, titleText, one_find);
+                parent.getChildren().setAll(mp, find_path, titleText, one_find);
             });
 
             one_find.setOnAction(f -> {
@@ -409,7 +408,7 @@ public class Main extends Application {
                         mp.setLayoutX(55);
                         mp.setLayoutY(45);
                         mp.setPath(subPath);
-                        parent.getChildren().setAll(mp, findpath, titleText, one_find);
+                        parent.getChildren().setAll(mp, find_path, titleText, one_find);
 
                         stepIndex[0]++;
                     }
@@ -421,7 +420,7 @@ public class Main extends Application {
             pane mazePane = new pane(map);
             mazePane.setLayoutX(55);
             mazePane.setLayoutY(45);
-            pane.getChildren().addAll(mazePane, findpath, one_find);
+            pane.getChildren().addAll(mazePane, find_path, one_find);
             return pane;
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
@@ -433,7 +432,7 @@ public class Main extends Application {
         Pane pane = new Pane();
         try {
             createMaze maze = new createMaze(25, 1, 1, 4,0);
-            map = maze.getmaze();
+            map = maze.getMaze();
             int side = map.length;
 
             Text titleText = new Text("自动地图");
@@ -442,13 +441,13 @@ public class Main extends Application {
             titleText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
             pane.getChildren().add(titleText);
 
-            Button findpath = new Button("获取最短路径");
-            findpath.setPrefHeight(40);
-            findpath.setPrefWidth(100);
-            findpath.setLayoutX(80);
-            findpath.setLayoutY(470);
+            Button find_path = new Button("获取最短路径");
+            find_path.setPrefHeight(40);
+            find_path.setPrefWidth(100);
+            find_path.setLayoutX(80);
+            find_path.setLayoutY(470);
 
-            Button one_find = new Button("一步步获取路径");
+            Button one_find = new Button("分步获取路径");
             one_find.setPrefHeight(40);
             one_find.setPrefWidth(100);
             one_find.setLayoutX(250);
@@ -460,7 +459,7 @@ public class Main extends Application {
             java.util.Collections.reverse(list);
             final int[] stepIndex = {0};
 
-            findpath.setOnAction(f -> {
+            find_path.setOnAction(f -> {
                 try {
                     StringBuilder sb = new StringBuilder();
                     sb.append("最短路径：\n");
@@ -483,7 +482,7 @@ public class Main extends Application {
                 mp.setLayoutX(55);
                 mp.setLayoutY(45);
                 mp.setPath(list);
-                parent.getChildren().setAll(mp, findpath, titleText, one_find);
+                parent.getChildren().setAll(mp, find_path, titleText, one_find);
             });
 
             one_find.setOnAction(f -> {
@@ -508,7 +507,7 @@ public class Main extends Application {
                         mp.setLayoutX(55);
                         mp.setLayoutY(45);
                         mp.setPath(subPath);
-                        parent.getChildren().setAll(mp, findpath, titleText, one_find);
+                        parent.getChildren().setAll(mp, find_path, titleText, one_find);
 
                         stepIndex[0]++;
                     }
@@ -520,7 +519,7 @@ public class Main extends Application {
             pane mazePane = new pane(map);
             mazePane.setLayoutX(55);
             mazePane.setLayoutY(45);
-            pane.getChildren().addAll(mazePane, findpath, one_find);
+            pane.getChildren().addAll(mazePane, find_path, one_find);
             return pane;
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
@@ -532,7 +531,7 @@ public class Main extends Application {
         Pane pane = new Pane();
 
         // 输入框和标签
-        Text sizeLabel = new Text("请输入迷宫尺寸:\n(奇数且>=5,<=29)");
+        Text sizeLabel = new Text("请输入迷宫尺寸:\n(奇数且>=5,<=27)");
         sizeLabel.setLayoutX(100);
         sizeLabel.setLayoutY(30);
         sizeLabel.setStyle("-fx-font-size: 16px;");
@@ -555,15 +554,15 @@ public class Main extends Application {
         confirmBtn.setLayoutY(10);
 
         //获取最短路径按钮
-        Button findpath = new Button("获取最短路径");
-        findpath.setPrefHeight(40);
-        findpath.setPrefWidth(100);
-        findpath.setLayoutX(80);
-        findpath.setLayoutY(470);
-        findpath.setDisable(true);
+        Button find_path = new Button("获取最短路径");
+        find_path.setPrefHeight(40);
+        find_path.setPrefWidth(100);
+        find_path.setLayoutX(80);
+        find_path.setLayoutY(470);
+        find_path.setDisable(true);
 
         // 一步步获取路径按钮
-        Button one_find = new Button("一步步获取路径");
+        Button one_find = new Button("分步获取路径");
         one_find.setPrefHeight(40);
         one_find.setPrefWidth(100);
         one_find.setLayoutX(250);
@@ -571,7 +570,7 @@ public class Main extends Application {
         one_find.setDisable(true);
 
         // 将所有组件添加到pane中
-        pane.getChildren().addAll(titleText, sizeLabel, sizeField, confirmBtn, findpath, one_find);
+        pane.getChildren().addAll(titleText, sizeLabel, sizeField, confirmBtn, find_path, one_find);
 
         // 路径数据
         final List<int[]>[] pathList = new List[]{null};
@@ -583,32 +582,32 @@ public class Main extends Application {
                 int side;
                 try {
                     side = Integer.parseInt(sizeField.getText());
-                    sizeLabel.setText("请输入迷宫尺寸:\n(奇数且>=5,<=29)");
-                    if (side < 5 || side > 29 || side % 2 == 0) {
+                    sizeLabel.setText("请输入迷宫尺寸:\n(奇数且>=5,<=27)");
+                    if (side < 5 || side > 27 || side % 2 == 0) {
                         sizeLabel.setText("输入有误！");
-                        findpath.setDisable(true);
+                        find_path.setDisable(true);
                         one_find.setDisable(true);
                         return;
                     }
                 } catch (NumberFormatException ex) {
                     sizeLabel.setText("请输入有效数字！");
-                    findpath.setDisable(true);
+                    find_path.setDisable(true);
                     one_find.setDisable(true);
                     return;
                 }
                 createMaze maze = new createMaze(side, 1, 1, 5, 1);
-                map = maze.getmaze();
+                map = maze.getMaze();
                 mapHolder[0] = map;
                 sizeLabel.setText("输入正确！");
                 pane mp = new pane(map);
                 mp.setLayoutX(55);
                 mp.setLayoutY(45);
 
-                findpath.setDisable(false);
+                find_path.setDisable(false);
                 one_find.setDisable(false);
                 stepIndex[0] = 0;
                 stackContentPane.getChildren().clear();
-                pane.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, findpath, one_find);
+                parent.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, find_path, one_find);
 
                 // 计算路径
                 path bfs = new path(map, 1, 1, side - 2, side - 2);
@@ -621,7 +620,7 @@ public class Main extends Application {
             }
         });
 
-        findpath.setOnAction(f -> {
+        find_path.setOnAction(f -> {
             try {
                 if (mapHolder[0] == null || pathList[0] == null) return;
                 List<int[]> list = pathList[0];
@@ -630,13 +629,10 @@ public class Main extends Application {
                 for (int i = 0, count = 1; i < list.size(); i++, count++) {
                     int[] pos = list.get(i);
                     sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
-                    if (count % 2 == 1) {
-                        if (count > 10)
-                            sb.append("\t");
-                        else
-                            sb.append("\t\t");
-                    } else {
+                    if ((i+1) % 4 == 0) {
                         sb.append("\n");
+                    } else {
+                        sb.append(" ");
                     }
                 }
                 Text stackText = new Text(10, 30, sb.toString());
@@ -647,7 +643,7 @@ public class Main extends Application {
                 mp.setLayoutX(55);
                 mp.setLayoutY(45);
                 mp.setPath(list);
-                pane.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, findpath, one_find);
+                parent.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, find_path, one_find);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -663,10 +659,10 @@ public class Main extends Application {
                     for (int i = 0; i <= stepIndex[0]; i++) {
                         int[] pos = list.get(i);
                         sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
-                        if ((i + 1) % 2 == 0) {
+                        if ((i+1) % 4 == 0) {
                             sb.append("\n");
                         } else {
-                            sb.append("\t");
+                            sb.append(" ");
                         }
                     }
                     Text stackText = new Text(10, 30, sb.toString());
@@ -677,7 +673,7 @@ public class Main extends Application {
                     mp.setLayoutX(55);
                     mp.setLayoutY(45);
                     mp.setPath(subPath);
-                    pane.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, findpath, one_find);
+                    parent.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, find_path, one_find);
 
                     stepIndex[0]++;
                 }

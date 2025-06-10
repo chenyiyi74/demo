@@ -23,7 +23,7 @@ class createMaze {
          prim();
          read();
     }
-    public int[][] getmaze() {
+    public int[][] getMaze() {
         return maze;
     }
 
@@ -133,7 +133,6 @@ class createMaze {
         }
     }
     public void prim() {
-        // 递归回溯法生成完美迷宫（有分支、无环）
         maze = new int[side][side];
         for (int i = 0; i < side; i++)
             for (int j = 0; j < side; j++)
@@ -142,8 +141,8 @@ class createMaze {
         Random rand = new Random();
         dfsMaze(1, 1, rand);
 
-        // 随机打通一些墙，制造环路（可选，增加多条通路）
-        int extraOpen = side; // 可调整打通墙的数量
+        // 随机打通一些墙，制造环路
+        int extraOpen = side;
         for (int k = 0; k < extraOpen; k++) {
             int x = rand.nextInt(side - 2) + 1;
             int y = rand.nextInt(side - 2) + 1;
@@ -157,9 +156,8 @@ class createMaze {
             }
         }
 
-        // 保证入口出口为通路
-        maze[1][0] = 0; // 左上入口
-        maze[side-2][side-1] = 0; // 右下出口
+        maze[1][0] = 0;
+        maze[side-2][side-1] = 0;
 
         // 保存到文件
         try {
