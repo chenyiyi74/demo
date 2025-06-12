@@ -8,11 +8,13 @@ import java.util.Stack;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.animation.Timeline;
 
 public class Main extends Application {
     int[][] map;
@@ -87,16 +89,20 @@ public class Main extends Application {
         stackTitle.setLayoutX(500);
         stackTitle.setLayoutY(50);
 
-        Text Name=new Text("   /\\_/\\\n" +
-                "  ( o.o )\n" +
-                "  > ^ <\n");
+        Text Name=new Text("""
+                   /\\_/\\
+                  ( o.o )
+                  > ^ <
+                """);
         Name.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-        Name.setLayoutX(10);
+        Name.setLayoutX(650);
         Name.setLayoutY(560);
 
-        Text Name2=new Text("   /\\_/\\\n" +
-                "  ( o.o )\n" +
-                "  > ^ <\n");
+        Text Name2=new Text("""
+                   /\\_/\\
+                  ( o.o )
+                  > ^ <
+                """);
         Name2.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
         Name2.setLayoutX(850);
         Name2.setLayoutY(560);
@@ -130,12 +136,16 @@ public class Main extends Application {
         });
     }
 
+    // ... 省略 start 方法和其它内容 ...
+
     public Pane getManual1Pane(Pane parent, Pane stackContentPane) {
         Pane pane = new Pane();
         try {
             createMaze maze = new createMaze(25, 1, 1, 1);
             map = maze.getMaze();
             int side = map.length;
+            final boolean[] isAutoPlaying = {false};
+            final Timeline[] timelineHolder = {null};
 
             Text titleText = new Text("地图1");
             titleText.setLayoutX(10);
@@ -143,17 +153,23 @@ public class Main extends Application {
             titleText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
             pane.getChildren().add(titleText);
 
-            Button find_path = new Button("直接获取最短路径");
+            Button find_path = new Button("直接获取路径");
             find_path.setPrefHeight(40);
             find_path.setPrefWidth(120);
-            find_path.setLayoutX(80);
+            find_path.setLayoutX(5);
             find_path.setLayoutY(470);
 
-            Button one_find = new Button("分步获取路径");
+            Button one_find = new Button("手动分步获取");
             one_find.setPrefHeight(40);
             one_find.setPrefWidth(100);
-            one_find.setLayoutX(250);
+            one_find.setLayoutX(185);
             one_find.setLayoutY(470);
+
+            Button one_find2 = new Button("自动分步获取");
+            one_find2.setPrefHeight(40);
+            one_find2.setPrefWidth(100);
+            one_find2.setLayoutX(345);
+            one_find2.setLayoutY(470);
 
             path bfs = new path(map, 1, 1, side - 2, side - 2);
             Stack<int[]> stack = bfs.getStack();
@@ -185,7 +201,7 @@ public class Main extends Application {
                 mp.setLayoutX(55);
                 mp.setLayoutY(45);
                 mp.setPath(list);
-                parent.getChildren().setAll(mp, find_path, titleText, one_find);
+                parent.getChildren().setAll(mp, find_path, titleText, one_find, one_find2);
             });
 
             one_find.setOnAction(f -> {
@@ -205,13 +221,12 @@ public class Main extends Application {
                         Text stackText = new Text(10, 30, sb.toString());
                         stackContentPane.getChildren().setAll(stackText);
 
-                        // 地图高亮当前
                         List<int[]> subPath = list.subList(0, stepIndex[0] + 1);
                         pane mp = new pane(map);
                         mp.setLayoutX(55);
                         mp.setLayoutY(45);
                         mp.setPath(subPath);
-                        parent.getChildren().setAll(mp, find_path, titleText, one_find);
+                        parent.getChildren().setAll(mp, find_path, titleText, one_find, one_find2);
 
                         stepIndex[0]++;
                     }
@@ -220,22 +235,75 @@ public class Main extends Application {
                 }
             });
 
+            one_find2.setOnAction(f -> {
+                if (!isAutoPlaying[0]) {
+                    one_find2.setText("获取中...");
+                    Timeline timeline = new Timeline();
+                    timeline.setCycleCount(list.size() - stepIndex[0]);
+                    timeline.getKeyFrames().add(new javafx.animation.KeyFrame(
+                            javafx.util.Duration.seconds(0.5),
+                            event -> {
+                                if (stepIndex[0] < list.size()) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append("路径步进：\n");
+                                    for (int i = 0; i <= stepIndex[0]; i++) {
+                                        int[] pos = list.get(i);
+                                        sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
+                                        if ((i+1) % 4 == 0) {
+                                            sb.append("\n");
+                                        } else {
+                                            sb.append(" ");
+                                        }
+                                    }
+                                    Text stackText = new Text(10, 30, sb.toString());
+                                    stackContentPane.getChildren().setAll(stackText);
+
+                                    List<int[]> subPath = list.subList(0, stepIndex[0] + 1);
+                                    pane mp = new pane(map);
+                                    mp.setLayoutX(55);
+                                    mp.setLayoutY(45);
+                                    mp.setPath(subPath);
+                                    parent.getChildren().setAll(mp, find_path, titleText, one_find, one_find2);
+
+                                    stepIndex[0]++;
+                                }
+                            }
+                    ));
+                    timeline.setOnFinished(ev -> {
+                        isAutoPlaying[0] = false;
+                        one_find2.setText("自动分步获取");
+                    });
+                    timelineHolder[0] = timeline;
+                    isAutoPlaying[0] = true;
+                    timeline.play();
+                } else {
+                    if (timelineHolder[0] != null) {
+                        timelineHolder[0].stop();
+                    }
+                    isAutoPlaying[0] = false;
+                    one_find2.setText("自动分步获取");
+                }
+            });
+
             pane mazePane = new pane(map);
             mazePane.setLayoutX(55);
             mazePane.setLayoutY(45);
-            pane.getChildren().addAll(mazePane, find_path, one_find);
+            pane.getChildren().addAll(mazePane, find_path, one_find, one_find2);
             return pane;
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
         return pane;
     }
+
     public Pane getManual2Pane(Pane parent, Pane stackContentPane) {
         Pane pane = new Pane();
         try {
             createMaze maze = new createMaze(25, 1, 1, 2);
             map = maze.getMaze();
             int side = map.length;
+            final boolean[] isAutoPlaying = {false};
+            final Timeline[] timelineHolder = {null};
 
             Text titleText = new Text("地图2");
             titleText.setLayoutX(10);
@@ -246,14 +314,20 @@ public class Main extends Application {
             Button find_path = new Button("获取最短路径");
             find_path.setPrefHeight(40);
             find_path.setPrefWidth(100);
-            find_path.setLayoutX(80);
+            find_path.setLayoutX(5);
             find_path.setLayoutY(470);
 
             Button one_find = new Button("分步获取路径");
             one_find.setPrefHeight(40);
             one_find.setPrefWidth(100);
-            one_find.setLayoutX(250);
+            one_find.setLayoutX(185);
             one_find.setLayoutY(470);
+
+            Button one_find2 = new Button("自动分步获取");
+            one_find2.setPrefHeight(40);
+            one_find2.setPrefWidth(100);
+            one_find2.setLayoutX(345);
+            one_find2.setLayoutY(470);
 
             path bfs = new path(map, 1, 1, side - 2, side - 2);
             Stack<int[]> stack = bfs.getStack();
@@ -284,7 +358,7 @@ public class Main extends Application {
                 mp.setLayoutX(55);
                 mp.setLayoutY(45);
                 mp.setPath(list);
-                parent.getChildren().setAll(mp, find_path, titleText, one_find);
+                parent.getChildren().setAll(mp, find_path, titleText, one_find, one_find2);
             });
 
             one_find.setOnAction(f -> {
@@ -309,7 +383,7 @@ public class Main extends Application {
                         mp.setLayoutX(55);
                         mp.setLayoutY(45);
                         mp.setPath(subPath);
-                        parent.getChildren().setAll(mp, find_path, titleText, one_find);
+                        parent.getChildren().setAll(mp, find_path, titleText, one_find, one_find2);
 
                         stepIndex[0]++;
                     }
@@ -318,10 +392,60 @@ public class Main extends Application {
                 }
             });
 
+            one_find2.setOnAction(f -> {
+                if (!isAutoPlaying[0]) {
+                    one_find2.setText("获取中...");
+                    Timeline timeline = new Timeline();
+                    timeline.setCycleCount(list.size() - stepIndex[0]);
+                    timeline.getKeyFrames().add(new javafx.animation.KeyFrame(
+                            javafx.util.Duration.seconds(0.5),
+                            event -> {
+                                if (stepIndex[0] < list.size()) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append("路径步进：\n");
+                                    for (int i = 0; i <= stepIndex[0]; i++) {
+                                        int[] pos = list.get(i);
+                                        sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
+                                        if ((i+1) % 4 == 0) {
+                                            sb.append("\n");
+                                        } else {
+                                            sb.append(" ");
+                                        }
+                                    }
+                                    Text stackText = new Text(10, 30, sb.toString());
+                                    stackContentPane.getChildren().setAll(stackText);
+
+                                    List<int[]> subPath = list.subList(0, stepIndex[0] + 1);
+                                    pane mp = new pane(map);
+                                    mp.setLayoutX(55);
+                                    mp.setLayoutY(45);
+                                    mp.setPath(subPath);
+                                    parent.getChildren().setAll(mp, find_path, titleText, one_find, one_find2);
+
+                                    stepIndex[0]++;
+                                }
+                            }
+                    ));
+                    timeline.setOnFinished(ev -> {
+                        isAutoPlaying[0] = false;
+                        one_find2.setText("自动分步获取");
+                    });
+                    timelineHolder[0] = timeline;
+                    isAutoPlaying[0] = true;
+                    timeline.play();
+                } else {
+                    if (timelineHolder[0] != null) {
+                        timelineHolder[0].stop();
+                    }
+                    isAutoPlaying[0] = false;
+                    one_find2.setText("自动分步获取");
+                }
+            });
+
             pane mazePane = new pane(map);
             mazePane.setLayoutX(55);
             mazePane.setLayoutY(45);
-            pane.getChildren().addAll(mazePane, find_path, one_find);
+            pane.getChildren().addAll(mazePane, find_path, one_find, one_find2);
             return pane;
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
@@ -335,6 +459,8 @@ public class Main extends Application {
             createMaze maze = new createMaze(25, 1, 1, 3);
             map = maze.getMaze();
             int side = map.length;
+            final boolean[] isAutoPlaying = {false};
+            final Timeline[] timelineHolder = {null};
 
             Text titleText = new Text("地图3");
             titleText.setLayoutX(10);
@@ -345,14 +471,20 @@ public class Main extends Application {
             Button find_path = new Button("获取最短路径");
             find_path.setPrefHeight(40);
             find_path.setPrefWidth(100);
-            find_path.setLayoutX(80);
+            find_path.setLayoutX(5);
             find_path.setLayoutY(470);
 
             Button one_find = new Button("分步获取路径");
             one_find.setPrefHeight(40);
             one_find.setPrefWidth(100);
-            one_find.setLayoutX(250);
+            one_find.setLayoutX(185);
             one_find.setLayoutY(470);
+
+            Button one_find2 = new Button("自动分步获取");
+            one_find2.setPrefHeight(40);
+            one_find2.setPrefWidth(100);
+            one_find2.setLayoutX(345);
+            one_find2.setLayoutY(470);
 
             path bfs = new path(map, 1, 1, side - 2, side - 2);
             Stack<int[]> stack = bfs.getStack();
@@ -383,7 +515,7 @@ public class Main extends Application {
                 mp.setLayoutX(55);
                 mp.setLayoutY(45);
                 mp.setPath(list);
-                parent.getChildren().setAll(mp, find_path, titleText, one_find);
+                parent.getChildren().setAll(mp, find_path, titleText, one_find, one_find2);
             });
 
             one_find.setOnAction(f -> {
@@ -408,7 +540,7 @@ public class Main extends Application {
                         mp.setLayoutX(55);
                         mp.setLayoutY(45);
                         mp.setPath(subPath);
-                        parent.getChildren().setAll(mp, find_path, titleText, one_find);
+                        parent.getChildren().setAll(mp, find_path, titleText, one_find, one_find2);
 
                         stepIndex[0]++;
                     }
@@ -417,10 +549,60 @@ public class Main extends Application {
                 }
             });
 
+            one_find2.setOnAction(f -> {
+                if (!isAutoPlaying[0]) {
+                    one_find2.setText("获取中...");
+                    Timeline timeline = new Timeline();
+                    timeline.setCycleCount(list.size() - stepIndex[0]);
+                    timeline.getKeyFrames().add(new javafx.animation.KeyFrame(
+                            javafx.util.Duration.seconds(0.5),
+                            event -> {
+                                if (stepIndex[0] < list.size()) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append("路径步进：\n");
+                                    for (int i = 0; i <= stepIndex[0]; i++) {
+                                        int[] pos = list.get(i);
+                                        sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
+                                        if ((i+1) % 4 == 0) {
+                                            sb.append("\n");
+                                        } else {
+                                            sb.append(" ");
+                                        }
+                                    }
+                                    Text stackText = new Text(10, 30, sb.toString());
+                                    stackContentPane.getChildren().setAll(stackText);
+
+                                    List<int[]> subPath = list.subList(0, stepIndex[0] + 1);
+                                    pane mp = new pane(map);
+                                    mp.setLayoutX(55);
+                                    mp.setLayoutY(45);
+                                    mp.setPath(subPath);
+                                    parent.getChildren().setAll(mp, find_path, titleText, one_find, one_find2);
+
+                                    stepIndex[0]++;
+                                }
+                            }
+                    ));
+                    timeline.setOnFinished(ev -> {
+                        isAutoPlaying[0] = false;
+                        one_find2.setText("自动分步获取");
+                    });
+                    timelineHolder[0] = timeline;
+                    isAutoPlaying[0] = true;
+                    timeline.play();
+                } else {
+                    if (timelineHolder[0] != null) {
+                        timelineHolder[0].stop();
+                    }
+                    isAutoPlaying[0] = false;
+                    one_find2.setText("自动分步获取");
+                }
+            });
+
             pane mazePane = new pane(map);
             mazePane.setLayoutX(55);
             mazePane.setLayoutY(45);
-            pane.getChildren().addAll(mazePane, find_path, one_find);
+            pane.getChildren().addAll(mazePane, find_path, one_find, one_find2);
             return pane;
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
@@ -431,9 +613,11 @@ public class Main extends Application {
     public Pane getManual4Pane(Pane parent, Pane stackContentPane) {
         Pane pane = new Pane();
         try {
-            createMaze maze = new createMaze(25, 1, 1, 4,0);
+            createMaze maze = new createMaze(25, 1, 1, 4, 0);
             map = maze.getMaze();
             int side = map.length;
+            final boolean[] isAutoPlaying = {false};
+            final Timeline[] timelineHolder = {null};
 
             Text titleText = new Text("自动地图");
             titleText.setLayoutX(10);
@@ -444,14 +628,20 @@ public class Main extends Application {
             Button find_path = new Button("获取最短路径");
             find_path.setPrefHeight(40);
             find_path.setPrefWidth(100);
-            find_path.setLayoutX(80);
+            find_path.setLayoutX(5);
             find_path.setLayoutY(470);
 
             Button one_find = new Button("分步获取路径");
             one_find.setPrefHeight(40);
             one_find.setPrefWidth(100);
-            one_find.setLayoutX(250);
+            one_find.setLayoutX(185);
             one_find.setLayoutY(470);
+
+            Button one_find2 = new Button("自动分步获取");
+            one_find2.setPrefHeight(40);
+            one_find2.setPrefWidth(100);
+            one_find2.setLayoutX(345);
+            one_find2.setLayoutY(470);
 
             path bfs = new path(map, 1, 1, side - 2, side - 2);
             Stack<int[]> stack = bfs.getStack();
@@ -466,7 +656,7 @@ public class Main extends Application {
                     for (int i = 0, count = 1; i < list.size(); i++, count++) {
                         int[] pos = list.get(i);
                         sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
-                        if (count % 4 == 0) {
+                        if ((i+1) % 4 == 0) {
                             sb.append("\n");
                         } else {
                             sb.append(" ");
@@ -482,7 +672,7 @@ public class Main extends Application {
                 mp.setLayoutX(55);
                 mp.setLayoutY(45);
                 mp.setPath(list);
-                parent.getChildren().setAll(mp, find_path, titleText, one_find);
+                parent.getChildren().setAll(mp, find_path, titleText, one_find, one_find2);
             });
 
             one_find.setOnAction(f -> {
@@ -507,7 +697,7 @@ public class Main extends Application {
                         mp.setLayoutX(55);
                         mp.setLayoutY(45);
                         mp.setPath(subPath);
-                        parent.getChildren().setAll(mp, find_path, titleText, one_find);
+                        parent.getChildren().setAll(mp, find_path, titleText, one_find, one_find2);
 
                         stepIndex[0]++;
                     }
@@ -516,10 +706,60 @@ public class Main extends Application {
                 }
             });
 
+            one_find2.setOnAction(f -> {
+                if (!isAutoPlaying[0]) {
+                    one_find2.setText("获取中...");
+                    Timeline timeline = new Timeline();
+                    timeline.setCycleCount(list.size() - stepIndex[0]);
+                    timeline.getKeyFrames().add(new javafx.animation.KeyFrame(
+                            javafx.util.Duration.seconds(0.5),
+                            event -> {
+                                if (stepIndex[0] < list.size()) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append("路径步进：\n");
+                                    for (int i = 0; i <= stepIndex[0]; i++) {
+                                        int[] pos = list.get(i);
+                                        sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
+                                        if ((i+1) % 4 == 0) {
+                                            sb.append("\n");
+                                        } else {
+                                            sb.append(" ");
+                                        }
+                                    }
+                                    Text stackText = new Text(10, 30, sb.toString());
+                                    stackContentPane.getChildren().setAll(stackText);
+
+                                    List<int[]> subPath = list.subList(0, stepIndex[0] + 1);
+                                    pane mp = new pane(map);
+                                    mp.setLayoutX(55);
+                                    mp.setLayoutY(45);
+                                    mp.setPath(subPath);
+                                    parent.getChildren().setAll(mp, find_path, titleText, one_find, one_find2);
+
+                                    stepIndex[0]++;
+                                }
+                            }
+                    ));
+                    timeline.setOnFinished(ev -> {
+                        isAutoPlaying[0] = false;
+                        one_find2.setText("自动分步获取");
+                    });
+                    timelineHolder[0] = timeline;
+                    isAutoPlaying[0] = true;
+                    timeline.play();
+                } else {
+                    if (timelineHolder[0] != null) {
+                        timelineHolder[0].stop();
+                    }
+                    isAutoPlaying[0] = false;
+                    one_find2.setText("自动分步获取");
+                }
+            });
+
             pane mazePane = new pane(map);
             mazePane.setLayoutX(55);
             mazePane.setLayoutY(45);
-            pane.getChildren().addAll(mazePane, find_path, one_find);
+            pane.getChildren().addAll(mazePane, find_path, one_find, one_find2);
             return pane;
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
@@ -530,52 +770,54 @@ public class Main extends Application {
     public Pane getManual5Pane(Pane parent, Pane stackContentPane) {
         Pane pane = new Pane();
 
-        // 输入框和标签
         Text sizeLabel = new Text("请输入迷宫尺寸:\n(奇数且>=5,<=27)");
         sizeLabel.setLayoutX(100);
         sizeLabel.setLayoutY(30);
         sizeLabel.setStyle("-fx-font-size: 16px;");
-        javafx.scene.control.TextField sizeField = new javafx.scene.control.TextField("25");
+        TextField sizeField = new TextField("25");
         sizeField.setLayoutX(280);
         sizeField.setLayoutY(15);
         sizeField.setPrefWidth(60);
 
-        // 地图标题
         Text titleText = new Text("自动地图");
         titleText.setLayoutX(10);
         titleText.setLayoutY(30);
         titleText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        // 确定按钮
         Button confirmBtn = new Button("确定");
         confirmBtn.setPrefHeight(30);
         confirmBtn.setPrefWidth(60);
         confirmBtn.setLayoutX(360);
         confirmBtn.setLayoutY(10);
 
-        //获取最短路径按钮
         Button find_path = new Button("获取最短路径");
         find_path.setPrefHeight(40);
         find_path.setPrefWidth(100);
-        find_path.setLayoutX(80);
+        find_path.setLayoutX(5);
         find_path.setLayoutY(470);
         find_path.setDisable(true);
 
-        // 一步步获取路径按钮
         Button one_find = new Button("分步获取路径");
         one_find.setPrefHeight(40);
         one_find.setPrefWidth(100);
-        one_find.setLayoutX(250);
+        one_find.setLayoutX(185);
         one_find.setLayoutY(470);
         one_find.setDisable(true);
 
-        // 将所有组件添加到pane中
-        pane.getChildren().addAll(titleText, sizeLabel, sizeField, confirmBtn, find_path, one_find);
+        Button one_find2 = new Button("自动分步获取");
+        one_find2.setPrefHeight(40);
+        one_find2.setPrefWidth(100);
+        one_find2.setLayoutX(345);
+        one_find2.setLayoutY(470);
+        one_find2.setDisable(true);
 
-        // 路径数据
+        pane.getChildren().addAll(titleText, sizeLabel, sizeField, confirmBtn, find_path, one_find, one_find2);
+
         final List<int[]>[] pathList = new List[]{null};
         final int[] stepIndex = {0};
         final int[][][] mapHolder = {null};
+        final boolean[] isAutoPlaying = {false};
+        final Timeline[] timelineHolder = {null};
 
         confirmBtn.setOnAction(e -> {
             try {
@@ -587,12 +829,14 @@ public class Main extends Application {
                         sizeLabel.setText("输入有误！");
                         find_path.setDisable(true);
                         one_find.setDisable(true);
+                        one_find2.setDisable(true);
                         return;
                     }
                 } catch (NumberFormatException ex) {
                     sizeLabel.setText("请输入有效数字！");
                     find_path.setDisable(true);
                     one_find.setDisable(true);
+                    one_find2.setDisable(true);
                     return;
                 }
                 createMaze maze = new createMaze(side, 1, 1, 5, 1);
@@ -605,11 +849,11 @@ public class Main extends Application {
 
                 find_path.setDisable(false);
                 one_find.setDisable(false);
+                one_find2.setDisable(false);
                 stepIndex[0] = 0;
                 stackContentPane.getChildren().clear();
-                parent.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, find_path, one_find);
+                parent.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, find_path, one_find, one_find2);
 
-                // 计算路径
                 path bfs = new path(map, 1, 1, side - 2, side - 2);
                 Stack<int[]> stack = bfs.getStack();
                 List<int[]> list = new ArrayList<>(stack);
@@ -643,7 +887,7 @@ public class Main extends Application {
                 mp.setLayoutX(55);
                 mp.setLayoutY(45);
                 mp.setPath(list);
-                parent.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, find_path, one_find);
+                parent.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, find_path, one_find, one_find2);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -673,7 +917,7 @@ public class Main extends Application {
                     mp.setLayoutX(55);
                     mp.setLayoutY(45);
                     mp.setPath(subPath);
-                    parent.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, find_path, one_find);
+                    parent.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, find_path, one_find, one_find2);
 
                     stepIndex[0]++;
                 }
@@ -681,6 +925,60 @@ public class Main extends Application {
                 throw new RuntimeException(e);
             }
         });
+
+        one_find2.setOnAction(f -> {
+            if (!isAutoPlaying[0]) {
+                one_find2.setText("获取中...");
+                Timeline timeline = new Timeline();
+                List<int[]> list = pathList[0];
+                timeline.setCycleCount(list == null ? 0 : list.size() - stepIndex[0]);
+                timeline.getKeyFrames().add(new javafx.animation.KeyFrame(
+                        javafx.util.Duration.seconds(0.5),
+                        event -> {
+                            if (mapHolder[0] == null || pathList[0] == null) return;
+                            List<int[]> l = pathList[0];
+                            if (stepIndex[0] < l.size()) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append("路径步进：\n");
+                                for (int i = 0; i <= stepIndex[0]; i++) {
+                                    int[] pos = l.get(i);
+                                    sb.append("(").append(pos[0]).append(",").append(pos[1]).append(")");
+                                    if ((i+1) % 4 == 0) {
+                                        sb.append("\n");
+                                    } else {
+                                        sb.append(" ");
+                                    }
+                                }
+                                Text stackText = new Text(10, 30, sb.toString());
+                                stackContentPane.getChildren().setAll(stackText);
+
+                                List<int[]> subPath = l.subList(0, stepIndex[0] + 1);
+                                pane mp = new pane(mapHolder[0]);
+                                mp.setLayoutX(55);
+                                mp.setLayoutY(45);
+                                mp.setPath(subPath);
+                                parent.getChildren().setAll(mp, titleText, sizeLabel, sizeField, confirmBtn, find_path, one_find, one_find2);
+
+                                stepIndex[0]++;
+                            }
+                        }
+                ));
+                timeline.setOnFinished(ev -> {
+                    isAutoPlaying[0] = false;
+                    one_find2.setText("自动分步获取");
+                });
+                timelineHolder[0] = timeline;
+                isAutoPlaying[0] = true;
+                timeline.play();
+            } else {
+                if (timelineHolder[0] != null) {
+                    timelineHolder[0].stop();
+                }
+                isAutoPlaying[0] = false;
+                one_find2.setText("自动分步获取");
+            }
+        });
+
         return pane;
     }
     public static void main(String[] args) {
