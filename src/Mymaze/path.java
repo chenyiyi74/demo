@@ -4,6 +4,9 @@ import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.Random;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class path {
     private int[][] maze;
@@ -13,6 +16,9 @@ public class path {
     private int startx, starty;
     private int endx, endy;
     private Stack<int[]> stack = new Stack<>();
+
+    // 随机通路存储
+    private Stack<int[]> randomStack = new Stack<>();
 
     public path(int[][] maze, int startx, int starty, int endx, int endy) throws FileNotFoundException {
         this.maze = maze;
@@ -74,6 +80,53 @@ public class path {
         }
         maze[startx][starty] = 2;
         stack.push(new int[]{startx, starty});
+    }
+
+    // ----------- 随机通路相关 -----------
+// 生成一条随机通路（非最短路径），多次尝试避免找不到
+    public void findRandomPath() {
+        boolean found = false;
+        int tryCount = 0;
+        while (!found && tryCount < 100) { // 最多尝试100次
+            boolean[][] visited = new boolean[side][side];
+            randomStack.clear();
+            Random rand = new Random();
+            found = dfsRandom(startx, starty, visited, randomStack, rand);
+            tryCount++;
+        }
+    }
+    // 随机DFS递归
+    private boolean dfsRandom(int x, int y, boolean[][] visited, Stack<int[]> pathStack, Random rand) {
+        if (x == endx && y == endy) {
+            pathStack.push(new int[]{x, y});
+            return true;
+        }
+        visited[x][y] = true;
+        pathStack.push(new int[]{x, y});
+
+        int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        ArrayList<int[]> dirList = new ArrayList<>();
+        for (int[] d : dirs) dirList.add(d);
+        Collections.shuffle(dirList, rand);
+
+        for (int[] d : dirList) {
+            int nx = x + d[0], ny = y + d[1];
+            if (nx >= 0 && nx < side && ny >= 0 && ny < side && maze[nx][ny] == road && !visited[nx][ny]) {
+                if (dfsRandom(nx, ny, visited, pathStack, rand)) {
+                    return true;
+                }
+            }
+        }
+        pathStack.pop();
+        return false;
+    }
+
+    // 获取一条正序的随机通路
+    public ArrayList<int[]> getRandomPathList() {
+        findRandomPath();
+        ArrayList<int[]> list = new ArrayList<>(randomStack);
+        Collections.reverse(list);
+        return list;
     }
 
     public Stack<int[]> getStack() {
