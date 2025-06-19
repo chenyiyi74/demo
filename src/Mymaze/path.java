@@ -83,7 +83,6 @@ public class path {
     }
 
     // ----------- 随机通路相关 -----------
-// 生成一条随机通路（非最短路径），多次尝试避免找不到
     public void findRandomPath() {
         boolean found = false;
         int tryCount = 0;

@@ -184,7 +184,7 @@ class createMaze {
         directions.add(new int[]{2, 0}); // 右
         directions.add(new int[]{0, -2}); // 上
         directions.add(new int[]{-2, 0}); // 左
-        Collections.shuffle(directions, rand); // 随机打乱方向
+        Collections.shuffle(directions, rand);
 
         for (int[] dir : directions) {
             int nx = x + dir[0];

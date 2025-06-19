@@ -39,7 +39,7 @@ public class Main extends Application {
         stackScrollPane.setPrefSize(200, 450);
         stackScrollPane.setLayoutX(500);
         stackScrollPane.setLayoutY(80);
-        stackScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // 只显示竖直滚动条
+        stackScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         stackScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         stackScrollPane.setFitToWidth(true);
         stackScrollPane.setPannable(true);
@@ -75,8 +75,8 @@ public class Main extends Application {
         Text buttonTitle2Help2 = new Text("自定义规格");
         buttonTitle2Help2.setStyle("-fx-font-size: 10px; -fx-font-style: italic;");
 
-        Button auto1Btn = new Button("prim算法（自动）");
-        Button auto2Btn = new Button("prim算法（手动）");
+        Button auto1Btn = new Button("DFS算法（自动）");
+        Button auto2Btn = new Button("DFS算法（手动）");
         buttonBox2.getChildren().add(buttonTitle2);
         buttonBox2.getChildren().addAll(auto1Btn);
         buttonBox2.getChildren().add(buttonTitle2Help);
@@ -142,24 +142,23 @@ public class Main extends Application {
         });
     }
 
-    // ===================== getManual1Pane =====================
+
     public Pane getManual1Pane(Pane parent, Pane stackContentPane) {
         return getGeneralManualPane(parent, stackContentPane, 1, "地图1");
     }
-    // ===================== getManual2Pane =====================
+
     public Pane getManual2Pane(Pane parent, Pane stackContentPane) {
         return getGeneralManualPane(parent, stackContentPane, 2, "地图2");
     }
-    // ===================== getManual3Pane =====================
+
     public Pane getManual3Pane(Pane parent, Pane stackContentPane) {
         return getGeneralManualPane(parent, stackContentPane, 3, "地图3");
     }
-    // ===================== getManual4Pane =====================
+
     public Pane getManual4Pane(Pane parent, Pane stackContentPane) {
         return getGeneralManualPane(parent, stackContentPane, 4, "自动地图");
     }
 
-    // ===================== 通用手动/自动地图面板 =====================
     private Pane getGeneralManualPane(Pane parent, Pane stackContentPane, int mapType, String title) {
         Pane pane = new Pane();
         try {
@@ -343,7 +342,6 @@ public class Main extends Application {
                         if (randomPath != null && randomPath.size() > 0) break;
                     }
                     if (randomPath == null || randomPath.size() == 0) {
-                        // 理论上不会出现
                         Text stackText = new Text(10, 30, "依然未找到随机通路！");
                         stackText.setWrappingWidth(190);
                         stackContentPane.getChildren().setAll(stackText);
@@ -418,7 +416,6 @@ public class Main extends Application {
         confirmBtn.setLayoutX(360);
         confirmBtn.setLayoutY(10);
 
-        // 按钮位置与getManual1Pane一致
         Button find_path = new Button("直接获取路径");
         find_path.setPrefHeight(40);
         find_path.setPrefWidth(100);
@@ -652,7 +649,6 @@ public class Main extends Application {
                     if (randomPath != null && randomPath.size() > 0) break;
                 }
                 if (randomPath == null || randomPath.size() == 0) {
-                    // 理论上不会出现
                     Text stackText = new Text(10, 30, "依然未找到随机通路！");
                     stackText.setWrappingWidth(190);
                     stackContentPane.getChildren().setAll(stackText);
